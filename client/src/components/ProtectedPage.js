@@ -22,7 +22,6 @@ function ProtectedPage({ children }) {
       if (response.success) {
         dispatch(SetCurrentUser(response.data));
         if (response.data.userType === "donar") {
-          console.log(response.data);
           getDonationInfo(response.data._id);
         }
         message.success(response.message);
@@ -37,14 +36,10 @@ function ProtectedPage({ children }) {
   const getDonationInfo = async (donorId) => {
     try {
       dispatch(SetLoading(true));
-      console.log("type of donor id", typeof donorId);
       const response = await axios.get(`/api/inventory/donor-info/${donorId}`);
       dispatch(SetLoading(false));
-      console.log("hook", response.data.success);
       if (response.data.success) {
-        console.log("respose of E", response);
         setDonationInfo(response.data.data);
-        console.log(donationInfo);
       } else {
         throw new Error("hookahua");
       }

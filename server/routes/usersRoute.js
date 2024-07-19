@@ -242,7 +242,6 @@ router.get(
   async (req, res) => {
     try {
       const organization = await User.find({ userType: "organization" });
-      console.log("Registered Organizations", organization);
       return res.send({
         success: true,
         message: "Organizations fetched successfully",

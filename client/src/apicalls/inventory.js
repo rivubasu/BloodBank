@@ -13,7 +13,6 @@ export const GetInventoryWithFilters = (filters, limit) => {
 };
 
 export const GetEligibleDonation = (donorId) => {
-  console.log("before", donorId);
   return axiosInstance("get", `/api/inventory/donor-info/${donorId}`);
 };
 
