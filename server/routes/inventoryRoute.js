@@ -8,6 +8,11 @@ const nodemailer = require("nodemailer");
 // add inventory
 router.post("/add", authMiddleware, async (req, res) => {
   try {
+    let formattedEligibleDateDonated;
+    let formatedCurrentDate;
+    let flag = 0;
+    let donorName = null;
+    let orgName = null;
     // valiadate email and inventoryType
     const user = await User.findOne({ email: req.body.email });
     if (!user) throw new Error("Invalid Email");
@@ -123,6 +128,10 @@ router.post("/add", authMiddleware, async (req, res) => {
       */
       // Handling "in" inventory type (donor adding inventory)
       // Check donor eligibility
+      flag = 1;
+      const orgId = new mongoose.Types.ObjectId(req.body.userId);
+      const organization = await User.findOne({ _id: orgId });
+      orgName = organization.organizationName;
       const lastDonation = await Inventory.findOne({
         donar: user._id,
         inventoryType: "in",
@@ -136,13 +145,17 @@ router.post("/add", authMiddleware, async (req, res) => {
 
         // Calculate difference in months
         const diffInMonths = differenceInMonths(currentDate, lastDonationDate);
-
+        const eligibleDateWhendonated = addMonths(currentDate, 3);
+        formattedEligibleDateDonated = format(
+          eligibleDateWhendonated,
+          "dd/MM/yyyy"
+        );
+        formatedCurrentDate = format(currentDate, "dd/MM/yyyy");
         // Check if last donation was less than 3 months ago
         if (diffInMonths < 3) {
           // Calculate the eligible date
           const eligibleDate = addMonths(lastDonationDate, 3);
           const formattedEligibleDate = format(eligibleDate, "dd/MM/yyyy");
-
           throw new Error(
             `Donor is not eligible for donation. Last donation was on ${format(
               lastDonationDate,
@@ -161,6 +174,34 @@ router.post("/add", authMiddleware, async (req, res) => {
     const inventory = new Inventory(req.body);
     await inventory.save();
 
+    if (flag) {
+      donorName = user.name;
+      // Create Nodemailer transporter
+      const transporter = nodemailer.createTransport({
+        host: "smtp.gmail.com",
+        port: 587,
+        secure: false, //true for 465, false for other ports
+        auth: {
+          user: process.env.email_account,
+          pass: process.env.email_pass,
+        },
+      });
+
+      const mailOptions = {
+        from: `"BloodLink" <${process.env.email_account}>`,
+        to: req.body.email,
+        subject: `Blood Donation at ${orgName} on ${formatedCurrentDate}`,
+        text: `Dear ${donorName},\n\nYou have recently donated blood at ${orgName} on ${formatedCurrentDate}. We really appreciate your participation for this noble cause.\n\nYour next eligible donation date is on ${formattedEligibleDateDonated} \n\nBest regards,\n${orgName}`,
+      };
+
+      transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+          console.error("Error sending email:", error);
+        } else {
+          console.log("Email sent:", info.response);
+        }
+      });
+    }
     return res.send({ success: true, message: "Inventory Added Successfully" });
   } catch (error) {
     return res.send({ success: false, message: error.message });
