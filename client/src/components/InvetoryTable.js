@@ -1,9 +1,9 @@
-import React from "react";
-import { GetInventoryWithFilters } from "../apicalls/inventory";
-import { useDispatch } from "react-redux";
-import { getDateFormat } from "../utils/helpers";
-import { SetLoading } from "../redux/loadersSlice";
 import { Table, message } from "antd";
+import React from "react";
+import { useDispatch } from "react-redux";
+import { GetInventoryWithFilters } from "../apicalls/inventory";
+import { SetLoading } from "../redux/loadersSlice";
+import { getDateFormat } from "../utils/helpers";
 
 function InvetoryTable({ filters, userType, limit }) {
   const [data, setData] = React.useState([]);
@@ -31,7 +31,7 @@ function InvetoryTable({ filters, userType, limit }) {
       render: (text, record) => {
         if (userType === "organization") {
           return record.inventoryType === "in"
-            ? record.donar?.name
+            ? record.donor?.name
             : record.hospital?.hospitalName;
         } else {
           return record.organization.organizationName;

@@ -1,11 +1,11 @@
+import { Table, message } from "antd";
 import React from "react";
 import { useDispatch } from "react-redux";
-import { SetLoading } from "../../../redux/loadersSlice";
-import { Table, message } from "antd";
 import { GetAllHospitalsOfAnOrganization } from "../../../apicalls/users";
+import { SetLoading } from "../../../redux/loadersSlice";
 import { getDateFormat } from "../../../utils/helpers";
 
-function Donars() {
+function Donors() {
   const [data, setData] = React.useState([]);
   const dispatch = useDispatch();
 
@@ -39,8 +39,8 @@ function Donars() {
       dataIndex: "phone",
     },
     {
-        title: "Address",
-        dataIndex: "address",
+      title: "Address",
+      dataIndex: "address",
     },
     {
       title: "Created At",
@@ -59,4 +59,4 @@ function Donars() {
   );
 }
 
-export default Donars;
+export default Donors;

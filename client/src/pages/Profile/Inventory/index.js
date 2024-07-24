@@ -31,7 +31,7 @@ function Inventory() {
       dataIndex: "reference",
       render: (text, record) => {
         if (record.inventoryType === "in") {
-          return record.donar.name;
+          return record.donor.name;
         } else {
           return record.hospital.hospitalName;
         }

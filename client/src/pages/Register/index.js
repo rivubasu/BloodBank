@@ -8,7 +8,7 @@ import { getAntdInputValidation } from "../../utils/helpers";
 import OrgHospitalForm from "./OrgHospitalForm";
 
 function Register() {
-  const [type, setType] = React.useState("donar");
+  const [type, setType] = React.useState("donor");
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const onFinish = async (values) => {
@@ -56,12 +56,12 @@ function Register() {
           value={type}
           className="col-span-2"
         >
-          <Radio value="donar">Donar</Radio>
+          <Radio value="donor">Donar</Radio>
           <Radio value="hospital">Hospital</Radio>
           <Radio value="organization">Organization</Radio>
         </Radio.Group>
 
-        {type === "donar" && (
+        {type === "donor" && (
           <>
             {" "}
             <Form.Item
@@ -95,7 +95,7 @@ function Register() {
           </>
         )}
 
-        {type !== "donar" && <OrgHospitalForm type={type} />}
+        {type !== "donor" && <OrgHospitalForm type={type} />}
 
         <Button type="primary" block className="col-span-2" htmlType="submit">
           Register

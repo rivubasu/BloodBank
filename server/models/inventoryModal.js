@@ -26,7 +26,7 @@ const inventorySchema = new mongoose.Schema(
     },
 
     // if inventoryType is "out" then hospital will be set
-    // if inventoryType is "in" then donar will be set
+    // if inventoryType is "in" then donor will be set
 
     hospital: {
       type: mongoose.Schema.Types.ObjectId,
@@ -36,7 +36,7 @@ const inventorySchema = new mongoose.Schema(
       },
     },
 
-    donar: {
+    donor: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "users",
       required: function () {
@@ -48,7 +48,6 @@ const inventorySchema = new mongoose.Schema(
     timestamps: true,
   }
 );
-
 
 const Inventory = mongoose.model("inventories", inventorySchema);
 

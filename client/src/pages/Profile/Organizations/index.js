@@ -97,7 +97,7 @@ function Organizations({ userType }) {
       {showHistoryModal && (
         <Modal
           title={`${
-            userType === "donar" ? "Donations History" : "Cunsumptions History"
+            userType === "donor" ? "Donations History" : "Cunsumptions History"
           } In ${selectedOrganization.organizationName}`}
           centered
           open={showHistoryModal}

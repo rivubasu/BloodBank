@@ -2,7 +2,7 @@ import { Tabs } from "antd";
 import React from "react";
 import { useSelector } from "react-redux";
 import InvetoryTable from "../../components/InvetoryTable";
-import Donars from "./Donars";
+import Donors from "./Donors";
 import Hospitals from "./Hospitals";
 import Inventory from "./Inventory";
 import Organizations from "./Organizations";
@@ -17,8 +17,8 @@ function Profile() {
             <Tabs.TabPane tab="Inventory" key="1">
               <Inventory />
             </Tabs.TabPane>
-            <Tabs.TabPane tab="Donars" key="2">
-              <Donars />
+            <Tabs.TabPane tab="Donors" key="2">
+              <Donors />
             </Tabs.TabPane>
             <Tabs.TabPane tab="Hospitals" key="3">
               <Hospitals />
@@ -26,19 +26,19 @@ function Profile() {
           </>
         )}
 
-        {currentUser.userType === "donar" && (
+        {currentUser.userType === "donor" && (
           <>
             <Tabs.TabPane tab="Donations" key="4">
               <InvetoryTable
                 filters={{
                   inventoryType: "in",
-                  donar: currentUser._id,
+                  donor: currentUser._id,
                 }}
-                userType="donar"
+                userType="donor"
               />
             </Tabs.TabPane>
             <Tabs.TabPane tab="BloodBanks Donated" key="5">
-              <Organizations userType="donar" />
+              <Organizations userType="donor" />
             </Tabs.TabPane>
             <Tabs.TabPane tab="Registered BloodBanks" key="6">
               <Organizations userType="notMatter" />

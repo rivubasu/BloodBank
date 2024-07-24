@@ -21,7 +21,7 @@ function ProtectedPage({ children }) {
       dispatch(SetLoading(false));
       if (response.success) {
         dispatch(SetCurrentUser(response.data));
-        if (response.data.userType === "donar") {
+        if (response.data.userType === "donor") {
           getDonationInfo(response.data._id);
         }
         message.success(response.message);
@@ -41,7 +41,7 @@ function ProtectedPage({ children }) {
       if (response.data.success) {
         setDonationInfo(response.data.data);
       } else {
-        throw new Error("hookahua");
+        throw new Error(response.message);
       }
     } catch (error) {
       dispatch(SetLoading(false));

@@ -1,10 +1,9 @@
+import { message } from "antd";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { GetAllBloodBroupsInInventory } from "../../apicalls/dashboard";
-import { SetLoading } from "../../redux/loadersSlice";
-import { message } from "antd";
-import { getLoggedInUserName } from "../../utils/helpers";
 import InvetoryTable from "../../components/InvetoryTable";
+import { SetLoading } from "../../redux/loadersSlice";
 
 function Home() {
   const { currentUser } = useSelector((state) => state.users);
@@ -90,14 +89,14 @@ function Home() {
         </>
       )}
 
-      {currentUser.userType === "donar" && (
+      {currentUser.userType === "donor" && (
         <div>
           <span className="text-xl text-gray-700 font-semibold">
             Your Recent Donations
           </span>
           <InvetoryTable
             filters={{
-              donar: currentUser._id,
+              donor: currentUser._id,
             }}
             limit={5}
             userType={currentUser.userType}

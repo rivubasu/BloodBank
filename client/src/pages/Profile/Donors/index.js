@@ -1,12 +1,12 @@
 import { Button, Table, message } from "antd";
 import React from "react";
 import { useDispatch } from "react-redux";
-import { GetAllDonarsOfAnOrganization } from "../../../apicalls/users";
+import { GetAllDonorsOfAnOrganization } from "../../../apicalls/users";
 import { SetLoading } from "../../../redux/loadersSlice";
 import { getDateFormat } from "../../../utils/helpers";
 import AnnoucementForm from "./AnnoucementForm";
 
-function Donars() {
+function Donors() {
   const [data, setData] = React.useState([]);
   const [open, setOpen] = React.useState(false);
   const dispatch = useDispatch();
@@ -14,7 +14,7 @@ function Donars() {
   const getData = async () => {
     try {
       dispatch(SetLoading(true));
-      const response = await GetAllDonarsOfAnOrganization();
+      const response = await GetAllDonorsOfAnOrganization();
       dispatch(SetLoading(false));
       if (response.success) {
         setData(response.data);
@@ -67,4 +67,4 @@ function Donars() {
   );
 }
 
-export default Donars;
+export default Donors;

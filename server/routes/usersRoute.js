@@ -108,7 +108,7 @@ router.get("/get-current-user", authMiddleware, async (req, res) => {
 });
 
 // get all unique donors
-router.get("/get-all-donars", authMiddleware, async (req, res) => {
+router.get("/get-all-donors", authMiddleware, async (req, res) => {
   try {
     // get all unique donor ids from inventory
     const organization = new mongoose.Types.ObjectId(req.body.userId);
@@ -122,24 +122,24 @@ router.get("/get-all-donars", authMiddleware, async (req, res) => {
   },
   {
     $group: {
-    _id: "$donar",
+    _id: "$donor",
   },
   },
 ]);
     */
-    //array of donar ids
-    const uniqueDonorIds = await Inventory.distinct("donar", {
+    //array of donor ids
+    const uniqueDonorIds = await Inventory.distinct("donor", {
       organization,
     });
 
-    const donars = await User.find({
+    const donors = await User.find({
       _id: { $in: uniqueDonorIds },
     });
 
     return res.send({
       success: true,
-      message: "Donars fetched successfully",
-      data: donars,
+      message: "Donors fetched successfully",
+      data: donors,
     });
   } catch (error) {
     return res.send({
@@ -175,16 +175,16 @@ router.get("/get-all-hospitals", authMiddleware, async (req, res) => {
   }
 });
 
-// get all unique organizations for a donar
+// get all unique organizations for a donor
 router.get(
-  "/get-all-organizations-of-a-donar",
+  "/get-all-organizations-of-a-donor",
   authMiddleware,
   async (req, res) => {
     try {
       // get all unique organizations ids from inventory
-      const donar = new mongoose.Types.ObjectId(req.body.userId);
+      const donor = new mongoose.Types.ObjectId(req.body.userId);
       const uniqueOrganizationIds = await Inventory.distinct("organization", {
-        donar,
+        donor,
       });
 
       const hospitals = await User.find({

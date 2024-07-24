@@ -15,8 +15,8 @@ export const GetCurrentUser = async () => {
   return response;
 };
 
-export const GetAllDonarsOfAnOrganization = () => {
-  return axiosInstance("get", `/api/users/get-all-donars`);
+export const GetAllDonorsOfAnOrganization = () => {
+  return axiosInstance("get", `/api/users/get-all-donors`);
 };
 
 export const GetAllHospitalsOfAnOrganization = () => {
@@ -24,7 +24,7 @@ export const GetAllHospitalsOfAnOrganization = () => {
 };
 
 export const GetAllOrganizationsOfADonar = () => {
-  return axiosInstance("get", `/api/users/get-all-organizations-of-a-donar`);
+  return axiosInstance("get", `/api/users/get-all-organizations-of-a-donor`);
 };
 
 export const GetAllOrganizationsOfAHospital = () => {

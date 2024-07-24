@@ -17,8 +17,8 @@ router.post("/add", authMiddleware, async (req, res) => {
     const user = await User.findOne({ email: req.body.email });
     if (!user) throw new Error("Invalid Email");
 
-    if (req.body.inventoryType === "in" && user.userType !== "donar") {
-      throw new Error("This email is not registered as a donar");
+    if (req.body.inventoryType === "in" && user.userType !== "donor") {
+      throw new Error("This email is not registered as a donor");
     }
 
     if (req.body.inventoryType === "out" && user.userType !== "hospital") {
@@ -78,54 +78,6 @@ router.post("/add", authMiddleware, async (req, res) => {
       }
       req.body.hospital = user._id;
     } else {
-      /*
-      // Handling "in" inventory type (donor adding inventory)
-      // Check donor eligibility
-      const lastDonation = await Inventory.findOne({
-        donar: user._id,
-        inventoryType: "in",
-      })
-        .sort({ createdAt: -1 }) // Sort by createdAt descending to get the latest donation
-        .exec();
-
-      if (lastDonation) {
-        const lastDonationDate = new Date(lastDonation.createdAt);
-        const currentDate = new Date();
-        const diffInMonths =
-          (currentDate.getFullYear() - lastDonationDate.getFullYear()) * 12 +
-          currentDate.getMonth() -
-          lastDonationDate.getMonth();
-
-        // Check if last donation was less than 3 months ago
-        if (diffInMonths < 3) {
-          // Calculate the eligible date
-          const eligibleDate = new Date(lastDonationDate);
-          eligibleDate.setMonth(eligibleDate.getMonth() + 3);
-
-          const formattedEligibleDate = `${eligibleDate.toLocaleString(
-            "en-us",
-            {
-              month: "long",
-              day: "numeric",
-              year: "numeric",
-            }
-          )}`;
-
-          throw new Error(
-            `Donor is not eligible for donation. Last donation was on ${lastDonationDate.toLocaleDateString(
-              "en-us",
-              {
-                month: "long",
-                day: "numeric",
-                year: "numeric",
-              }
-            )}. Next eligible donation date will be after ${formattedEligibleDate}.`
-          );
-        }
-      }
-
-      // Assign donor ID to the request body
-      */
       // Handling "in" inventory type (donor adding inventory)
       // Check donor eligibility
       flag = 1;
@@ -133,24 +85,25 @@ router.post("/add", authMiddleware, async (req, res) => {
       const organization = await User.findOne({ _id: orgId });
       orgName = organization.organizationName;
       const lastDonation = await Inventory.findOne({
-        donar: user._id,
+        donor: user._id,
         inventoryType: "in",
       })
         .sort({ createdAt: -1 }) // Sort by createdAt descending to get the latest donation
         .exec();
+      const currentDate = new Date();
+      const eligibleDateWhendonated = addMonths(currentDate, 3);
+      formattedEligibleDateDonated = format(
+        eligibleDateWhendonated,
+        "dd/MM/yyyy"
+      );
+      formatedCurrentDate = format(currentDate, "dd/MM/yyyy");
 
       if (lastDonation) {
         const lastDonationDate = new Date(lastDonation.createdAt);
-        const currentDate = new Date();
+        //const currentDate = new Date();
 
         // Calculate difference in months
         const diffInMonths = differenceInMonths(currentDate, lastDonationDate);
-        const eligibleDateWhendonated = addMonths(currentDate, 3);
-        formattedEligibleDateDonated = format(
-          eligibleDateWhendonated,
-          "dd/MM/yyyy"
-        );
-        formatedCurrentDate = format(currentDate, "dd/MM/yyyy");
         // Check if last donation was less than 3 months ago
         if (diffInMonths < 3) {
           // Calculate the eligible date
@@ -167,7 +120,7 @@ router.post("/add", authMiddleware, async (req, res) => {
 
       // Assign donor ID to the request body
 
-      req.body.donar = user._id;
+      req.body.donor = user._id;
     }
 
     // add inventory
@@ -213,7 +166,7 @@ router.get("/get", authMiddleware, async (req, res) => {
   try {
     const inventory = await Inventory.find({ organization: req.body.userId })
       .sort({ createdAt: -1 })
-      .populate("donar")
+      .populate("donor")
       .populate("hospital");
     return res.send({ success: true, data: inventory });
   } catch (error) {
@@ -227,7 +180,7 @@ router.post("/filter", authMiddleware, async (req, res) => {
     const inventory = await Inventory.find(req.body.filters)
       .limit(req.body.limit || 10)
       .sort({ createdAt: -1 })
-      .populate("donar")
+      .populate("donor")
       .populate("hospital")
       .populate("organization");
     return res.send({ success: true, data: inventory });
@@ -243,13 +196,13 @@ router.get("/donor-info/:donorId", async (req, res) => {
   try {
     // Validate donorId
     const donor = await User.findById(donorId);
-    if (!donor || donor.userType !== "donar") {
+    if (!donor || donor.userType !== "donor") {
       throw new Error("Invalid donor ID or the user is not a donor");
     }
 
     // Find the last donation
     const lastDonation = await Inventory.findOne({
-      donar: donorId,
+      donor: donorId,
       inventoryType: "in",
     }).sort({ createdAt: -1 });
     let lastDonationDate = null;
@@ -288,7 +241,7 @@ router.post("/sent-message", authMiddleware, async (req, res) => {
     const donors = await Inventory.find({
       organization,
       inventoryType: "in",
-    }).distinct("donar");
+    }).distinct("donor");
     if (donors.length === 0) {
       throw new Error("No donors found for this organization.");
     }
