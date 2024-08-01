@@ -41,7 +41,7 @@ function Profile() {
               <Organizations userType="donor" />
             </Tabs.TabPane>
             <Tabs.TabPane tab="Registered BloodBanks" key="6">
-              <Organizations userType="notMatter" />
+              <Organizations userType="notMatterD" />
             </Tabs.TabPane>
           </>
         )}
@@ -61,7 +61,7 @@ function Profile() {
               <Organizations userType="hospital" />
             </Tabs.TabPane>
             <Tabs.TabPane tab="Registered BloodBanks" key="9">
-              <Organizations userType="notMatter" />
+              <Organizations userType="notMatterH" />
             </Tabs.TabPane>
           </>
         )}

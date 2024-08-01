@@ -290,4 +290,98 @@ router.post("/sent-message", authMiddleware, async (req, res) => {
     return res.send({ success: false, message: error.message });
   }
 });
+
+router.post("/search", authMiddleware, async (req, res) => {
+  console.log("Values received in backend:", req.body);
+
+  const { bloodGroup, quantity } = req.body;
+
+  try {
+    // Step 1: Match the Blood Group
+    const matchedBloodGroup = await Inventory.aggregate([
+      { $match: { bloodGroup } },
+    ]);
+
+    console.log("Step 1 - Matched Blood Group:", matchedBloodGroup);
+
+    // Step 2: Group by Organization and Blood Group
+    const groupedByOrgAndBloodGroup = await Inventory.aggregate([
+      { $match: { bloodGroup } },
+      {
+        $group: {
+          _id: { organization: "$organization", bloodGroup: "$bloodGroup" },
+          totalIn: {
+            $sum: {
+              $cond: [{ $eq: ["$inventoryType", "in"] }, "$quantity", 0],
+            },
+          },
+          totalOut: {
+            $sum: {
+              $cond: [{ $eq: ["$inventoryType", "out"] }, "$quantity", 0],
+            },
+          },
+        },
+      },
+    ]);
+
+    console.log(
+      "Step 2 - Grouped by Organization and Blood Group:",
+      groupedByOrgAndBloodGroup
+    );
+
+    // Step 3: Project the Available Quantity
+    const projectedAvailableQuantity = groupedByOrgAndBloodGroup.map(
+      (group) => ({
+        organization: group._id.organization,
+        bloodGroup: group._id.bloodGroup,
+        availableQuantity: group.totalIn - group.totalOut,
+      })
+    );
+
+    console.log(
+      "Step 3 - Projected Available Quantity:",
+      projectedAvailableQuantity
+    );
+
+    // Step 4: Filter Organizations with Sufficient Quantity
+    const filteredOrganizations = projectedAvailableQuantity.filter(
+      (group) => group.availableQuantity >= quantity
+    );
+
+    console.log("Step 4 - Filtered Organizations:", filteredOrganizations);
+
+    // Step 5: Lookup Organization Details
+    const organizationIds = filteredOrganizations.map(
+      (group) => group.organization
+    );
+    const organizations = await User.find({ _id: { $in: organizationIds } });
+
+    console.log("Step 5 - Lookup Organization Details:", organizations);
+
+    // Step 6: Format the Final Output
+    const formattedOutput = filteredOrganizations.map((group) => {
+      const orgDetails = organizations.find((org) =>
+        org._id.equals(group.organization)
+      );
+      return {
+        organizationName: orgDetails.organizationName,
+        email: orgDetails.email,
+        phone: orgDetails.phone,
+        address: orgDetails.address,
+        availableQuantity: group.availableQuantity,
+      };
+    });
+
+    res.status(200).send({
+      success: true,
+      data: formattedOutput,
+    });
+  } catch (error) {
+    res.status(500).send({
+      success: false,
+      message: error.message,
+    });
+  }
+});
+
 module.exports = router;

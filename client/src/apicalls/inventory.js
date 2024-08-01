@@ -19,3 +19,7 @@ export const GetEligibleDonation = (donorId) => {
 export const SentMessage = (data) => {
   return axiosInstance("post", "/api/inventory/sent-message", data);
 };
+
+export const searchAvailability = (data) => {
+  return axiosInstance("post", "/api/inventory/search", data);
+};

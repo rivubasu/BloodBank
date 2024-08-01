@@ -49,3 +49,8 @@ table {
   border: 1px solid #9f9f9f !important;
   border-radius: 2px !important;
 }
+
+.red-text {
+  color: #ff4d4f;
+  font-weight: bold;
+}
